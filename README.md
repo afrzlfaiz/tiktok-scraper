@@ -1,87 +1,107 @@
-# 🎵 TikTok Search Scraper
+# TikTok Search Scraper
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
-[![Node](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org)
 
-API-based TikTok video scraper with signature generation and multiple export formats.
+A CLI scraper for searching TikTok videos by keyword using an external signature server. Search results can be exported to JSON, CSV, or Excel.
 
-## ✨ Features
+## Features
 
-- 🔍 Search TikTok videos by keyword
-- 📊 Get detailed video stats (views, likes, comments, shares)
-- 💾 Export to JSON, CSV, or Excel format
-- 🎨 Beautiful CLI with colored output
-- 🚀 Fast async scraping
-- 🔄 Automatic pagination handling
+- Search TikTok videos by keyword
+- Collect video stats such as views, likes, comments, shares, and collects
+- Export results to `JSON`, `CSV`, or `XLSX`
+- Interactive CLI with scraping progress output
+- Setup and start scripts for Windows and Linux/macOS
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
 - Node.js 18+
 - npm
-- Git (optional, for auto-download)
+- Internet connection
+- Git is optional because the setup script includes a download fallback in some cases
 
-## 🚀 Quick Start
+## Quick Start
 
-### One-Command Setup & Run
+### Windows
 
-**Linux/Mac:**
+```powershell
+git clone https://github.com/afrzlfaiz/tiktok-scraper.git
+cd tiktok-scraper
+.\setup.bat
+.\start.bat
+```
 
+### Linux/macOS
+
+```bash
 git clone https://github.com/afrzlfaiz/tiktok-scraper.git
 cd tiktok-scraper
 chmod +x setup.sh start.sh
 ./setup.sh
 ./start.sh
+```
 
-**Windows:**
+## Manual Setup
 
-git clone https://github.com/afrzlfaiz/tiktok-scraper.git
-cd tiktok-scraper
-setup.bat
-start.bat
+If you do not want to use the automated scripts, run the steps below.
 
-### Manual Setup
+### 1. Install Python dependencies
 
-# 1. Install Python dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# 2. Clone & setup signature server
+### 2. Set up the signature server
+
+```bash
 git clone https://github.com/carcabot/tiktok-signature.git
 cd tiktok-signature
 npm install
 npx puppeteer browsers install chromium
 cd ..
+```
 
-# 3. Run signature server (Terminal 1)
-cd tiktok-signature && npm start
+### 3. Start the signature server
 
-# 4. Run scraper (Terminal 2)
+```bash
+cd tiktok-signature
+npm start
+```
+
+The default server runs at:
+
+```text
+http://localhost:8080
+```
+
+### 4. Run the scraper CLI
+
+```bash
 python tiktok_cli.py
+```
 
-## 📖 Usage Example
+## Usage Flow
 
-After starting both servers, you'll see:
+When the CLI starts, it will prompt you to:
 
-============================================================
-  T I K T O K   S E A R C H   S C R A P E R
-============================================================
+1. Enter a search keyword
+2. Choose how many videos to fetch
+3. Decide whether to export the results
+4. Select an export format: `JSON`, `CSV`, or `XLSX`
+5. Choose where to save the exported file
 
-📋 SEARCH PARAMETERS
-──────────────────────────────────────────────────
-🔍 Keyword: iran
-📊 Number of videos (default 30): 25
+The default filename uses a format like:
 
-💾 EXPORT OPTIONS
-──────────────────────────────────────────────────
-Select format:
-  [1] JSON (.json)
-  [2] CSV (.csv)
-  [3] Excel (.xlsx)
+```text
+tiktok_export_YYYYMMDD_HHMMSS.json
+```
 
-## 📁 Output Example
+## Example Output
 
-### JSON Output
+### JSON
+
+```json
 {
   "total": 25,
   "exported_at": "2026-04-16T22:30:45",
@@ -89,66 +109,119 @@ Select format:
     {
       "no": 1,
       "video_id": "7604314750763224340",
-      "username": "ijomah77",
-      "caption": "EmBeGe 😎 #minecraft",
+      "url": "https://www.tiktok.com/@example/video/7604314750763224340",
+      "username": "example",
+      "nickname": "Example User",
+      "caption": "Sample caption",
       "plays": 1600000,
       "likes": 16600,
-      "url": "https://www.tiktok.com/@ijomah77/video/7604314750763224340"
+      "comments": 240,
+      "shares": 90
     }
   ]
 }
+```
 
-### Excel Output
-- 📊 Header merah dengan teks putih
-- 📏 Auto-width columns
-- 📈 Ready for analysis
+### Exported fields
 
-## 🔧 Troubleshooting
+The exported data includes fields such as:
 
-### "Signature server not running"
-Make sure the signature server is started:
+- `video_id`
+- `url`
+- `username`
+- `nickname`
+- `caption`
+- `create_time`
+- `duration`
+- `plays`
+- `likes`
+- `comments`
+- `shares`
+- `collects`
+- `followers`
+- `music`
+- `cover`
+- `play_url`
+
+## Troubleshooting
+
+### Signature server is not running
+
+If the CLI reports that the signature server is not active, run:
+
+```bash
 cd tiktok-signature
 npm start
+```
 
-### "Chromium not found"
-Install Chromium manually:
+### Chromium is not installed
+
+```bash
 cd tiktok-signature
 npx puppeteer browsers install chromium
+```
 
-### Port 8080 already in use
-Change the port or kill the existing process:
+### Port `8080` is already in use
 
-Linux/Mac:
-lsof -i :8080
-kill -9 PID
+The signature server uses port `8080` by default. Make sure no other process is already using that port.
 
 Windows:
+
+```powershell
 netstat -ano | findstr :8080
-taskkill /PID PID /F
+taskkill /PID <PID> /F
+```
 
-## 📦 Project Structure
+Linux/macOS:
 
+```bash
+lsof -i :8080
+kill -9 <PID>
+```
+
+### `tiktok-signature` directory is missing
+
+Run the setup script first:
+
+Windows:
+
+```powershell
+.\setup.bat
+```
+
+Linux/macOS:
+
+```bash
+./setup.sh
+```
+
+## Project Structure
+
+```text
 tiktok-scraper/
-├── tiktok_cli.py          # Main CLI application
-├── requirements.txt       # Python dependencies
-├── setup.sh               # Linux/Mac setup script
-├── start.sh               # Linux/Mac start script
-├── setup.bat              # Windows setup script
-├── start.bat              # Windows start script
-├── README.md              # Documentation
-└── tiktok-signature/      # Signature server (setup creates this)
+|-- tiktok_cli.py
+|-- requirements.txt
+|-- setup.bat
+|-- setup.sh
+|-- start.bat
+|-- start.sh
+|-- README.md
+`-- tiktok-signature/   # created during setup
+```
 
-## 🙏 Credits
+## Python Dependencies
 
-This project relies on the amazing work of others:
+Current contents of `requirements.txt`:
 
-- carcabot/tiktok-signature - https://github.com/carcabot/tiktok-signature
-  Signature generation service that makes TikTok API access possible
-  
-- TikTok API research from various open-source contributors
+- `aiohttp`
+- `openpyxl`
 
-If you find this tool useful, please consider starring both repositories!
+## Credits
 
-## ⚠️ Disclaimer
+This project depends on:
 
-This tool is for educational purposes only. Please respect TikTok's Terms of Service and rate limits. The author is not responsible for any misuse of this tool.
+- `carcabot/tiktok-signature`: https://github.com/carcabot/tiktok-signature
+
+## Disclaimer
+
+This tool is intended for learning and experimentation. Make sure you follow TikTok's Terms of Service, rate limits, and any applicable data usage rules.

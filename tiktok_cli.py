@@ -392,7 +392,7 @@ class CLI:
         if not await self.scraper.check_server_health():
             print_error("Signature server is not running!")
             print_warning("\nPlease start the signature server first:")
-            print(f"{Colors.GRAY}  cd tiktok-signature && npm start{Colors.END}\n")
+            print(f"{Colors.GRAY}  cd tiktok-signature-python && python -m uvicorn main:app --port 8080{Colors.END}\n")
             return
         
         print_success("Signature server is ready!")

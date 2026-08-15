@@ -79,24 +79,6 @@ main() {
         exit 1
     fi
     
-    # Check Node.js
-    print_step "Checking Node.js..."
-    if command_exists node; then
-        print_success "Node.js found: $(node --version)"
-    else
-        print_error "Node.js not found! Please install Node.js 18+"
-        echo "  Download from: https://nodejs.org/"
-        exit 1
-    fi
-    
-    # Check npm
-    if command_exists npm; then
-        print_success "npm found: $(npm --version)"
-    else
-        print_error "npm not found!"
-        exit 1
-    fi
-    
     # Check Git
     print_step "Checking Git..."
     if command_exists git; then
@@ -110,51 +92,51 @@ main() {
     $PIP_CMD install -r requirements.txt
     print_success "Python dependencies installed"
     
-    # Setup tiktok-signature
-    print_step "Setting up tiktok-signature server..."
-    
-    if [ -d "tiktok-signature" ]; then
-        print_info "tiktok-signature already exists"
-        cd tiktok-signature
-        
+    # Setup tiktok-signature-python
+    print_step "Setting up tiktok-signature-python server..."
+
+    if [ -d "tiktok-signature-python" ]; then
+        print_info "tiktok-signature-python already exists"
+        cd tiktok-signature-python
+
         # Update if git repo
         if [ -d ".git" ]; then
             print_info "Updating to latest version..."
             git pull origin main 2>/dev/null || true
         fi
     else
-        print_info "Downloading tiktok-signature..."
-        
+        print_info "Downloading tiktok-signature-python..."
+
         if command_exists git; then
-            git clone https://github.com/carcabot/tiktok-signature.git
-            cd tiktok-signature
+            git clone https://github.com/afrzlfaiz/tiktok-signature-python.git
+            cd tiktok-signature-python
         else
             # Fallback to wget/curl
             if command_exists wget; then
-                wget https://github.com/carcabot/tiktok-signature/archive/refs/heads/main.zip -O tiktok-signature.zip
+                wget https://github.com/afrzlfaiz/tiktok-signature-python/archive/refs/heads/main.zip -O tiktok-signature-python.zip
             elif command_exists curl; then
-                curl -L https://github.com/carcabot/tiktok-signature/archive/refs/heads/main.zip -o tiktok-signature.zip
+                curl -L https://github.com/afrzlfaiz/tiktok-signature-python/archive/refs/heads/main.zip -o tiktok-signature-python.zip
             else
                 print_error "Neither git, wget, nor curl found!"
                 exit 1
             fi
-            
-            unzip -q tiktok-signature.zip
-            mv tiktok-signature-main tiktok-signature
-            rm tiktok-signature.zip
-            cd tiktok-signature
+
+            unzip -q tiktok-signature-python.zip
+            mv tiktok-signature-python-main tiktok-signature-python
+            rm tiktok-signature-python.zip
+            cd tiktok-signature-python
         fi
     fi
-    
-    print_info "Installing Node.js dependencies..."
-    npm install
-    
-    print_info "Installing Chromium for Puppeteer..."
-    npx puppeteer browsers install chromium
-    
+
+    print_info "Installing Python dependencies..."
+    $PIP_CMD install -r requirements.txt
+
+    print_info "Installing Chromium for Playwright..."
+    $PYTHON_CMD -m playwright install chromium
+
     cd ..
-    
-    print_success "tiktok-signature setup complete!"
+
+    print_success "tiktok-signature-python setup complete!"
     
     # Make scripts executable
     chmod +x start.sh 2>/dev/null || true
@@ -170,7 +152,7 @@ main() {
     echo -e "  ${YELLOW}./start.sh${NC}"
     echo ""
     echo -e "${CYAN}Or manually:${NC}"
-    echo -e "  Terminal 1: ${YELLOW}cd tiktok-signature && npm start${NC}"
+    echo -e "  Terminal 1: ${YELLOW}cd tiktok-signature-python && python -m uvicorn main:app --port 8080${NC}"
     echo -e "  Terminal 2: ${YELLOW}python tiktok_cli.py${NC}"
     echo ""
 }

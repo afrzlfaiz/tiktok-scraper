@@ -66,14 +66,8 @@ print_warning() {
 
 # Check if setup is complete
 check_setup() {
-    if [ ! -d "tiktok-signature" ]; then
-        print_error "tiktok-signature not found!"
-        print_info "Please run setup first: ${YELLOW}./setup.sh${NC}"
-        exit 1
-    fi
-    
-    if [ ! -d "tiktok-signature/node_modules" ]; then
-        print_error "tiktok-signature dependencies not installed!"
+    if [ ! -d "tiktok-signature-python" ]; then
+        print_error "tiktok-signature-python not found!"
         print_info "Please run setup first: ${YELLOW}./setup.sh${NC}"
         exit 1
     fi
@@ -81,7 +75,7 @@ check_setup() {
 
 # Wait for signature server to be ready
 wait_for_server() {
-    local max_attempts=30
+    local max_attempts=90
     local attempt=0
     
     print_info "Waiting for signature server to be ready..."
@@ -107,6 +101,13 @@ main() {
     print_banner
     check_setup
     
+    # Detect Python
+    if command_exists python3; then
+        PYTHON_CMD="python3"
+    else
+        PYTHON_CMD="python"
+    fi
+
     # Check if port 8080 is already in use
     if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null 2>&1; then
         print_warning "Port 8080 is already in use!"
@@ -114,11 +115,11 @@ main() {
     else
         # Start signature server
         echo -e "\n${CYAN}🚀 Starting signature server...${NC}"
-        cd tiktok-signature
-        npm start > ../signature.log 2>&1 &
+        cd tiktok-signature-python
+        $PYTHON_CMD -m uvicorn main:app --port 8080 > ../signature.log 2>&1 &
         SIGNATURE_PID=$!
         cd ..
-        
+
         echo -e "${GRAY}   PID: $SIGNATURE_PID${NC}"
         echo -e "${GRAY}   Log: signature.log${NC}"
     fi
@@ -137,12 +138,6 @@ main() {
     echo ""
     
     # Start Python scraper
-    if command_exists python3; then
-        PYTHON_CMD="python3"
-    else
-        PYTHON_CMD="python"
-    fi
-    
     $PYTHON_CMD tiktok_cli.py
     
     # Scraper finished

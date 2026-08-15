@@ -11,34 +11,38 @@ echo ================================================================
 echo.
 
 :: Check if setup exists
-if not exist "tiktok-signature" (
-    echo [ERROR] tiktok-signature not found!
-    echo Please run setup.bat first
-    pause
-    exit /b 1
-)
-
-if not exist "tiktok-signature\node_modules" (
-    echo [ERROR] tiktok-signature dependencies not installed!
+if not exist "tiktok-signature-python" (
+    echo [ERROR] tiktok-signature-python not found!
     echo Please run setup.bat first
     pause
     exit /b 1
 )
 
 echo [1/3] Starting signature server...
-start "TikTok Signature Server" cmd /k "cd tiktok-signature && npm start"
+start "TikTok Signature Server" cmd /k "cd tiktok-signature-python && python -m uvicorn main:app --port 8080"
 
 echo Waiting for server to be ready...
-timeout /t 5 /nobreak >nul
 
-:: Check if server is running
-echo [2/3] Checking server health...
+:: Poll health endpoint (max ~60s, browser init can take a while)
+set ATTEMPT=0
+
+:health_loop
 curl -s http://localhost:8080/health >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [WARNING] Server may not be fully ready yet
-    echo Waiting additional 5 seconds...
-    timeout /t 5 /nobreak >nul
+if %errorlevel% equ 0 goto server_ready
+
+set /a ATTEMPT+=1
+if %ATTEMPT% geq 30 (
+    echo [ERROR] Signature server failed to start within 60 seconds
+    echo Check the signature server window for errors
+    pause
+    exit /b 1
 )
+
+timeout /t 2 /nobreak >nul
+goto health_loop
+
+:server_ready
+echo [2/3] Server is ready!
 
 echo [3/3] Starting scraper CLI...
 echo.

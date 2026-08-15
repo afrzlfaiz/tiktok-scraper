@@ -1,7 +1,7 @@
 # TikTok Search Scraper
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org)
+[![Playwright](https://img.shields.io/badge/Playwright-Chromium-brightgreen)](https://playwright.dev)
 
 A CLI scraper for searching TikTok videos by keyword using an external signature server. Search results can be exported to JSON, CSV, or Excel.
 
@@ -16,8 +16,7 @@ A CLI scraper for searching TikTok videos by keyword using an external signature
 ## Requirements
 
 - Python 3.8+
-- Node.js 18+
-- npm
+- Playwright + Chromium (installed automatically by the setup script)
 - Internet connection
 - Git is optional because the setup script includes a download fallback in some cases
 
@@ -55,18 +54,18 @@ pip install -r requirements.txt
 ### 2. Set up the signature server
 
 ```bash
-git clone https://github.com/carcabot/tiktok-signature.git
-cd tiktok-signature
-npm install
-npx puppeteer browsers install chromium
+git clone https://github.com/afrzlfaiz/tiktok-signature-python.git
+cd tiktok-signature-python
+pip install -r requirements.txt
+python -m playwright install chromium
 cd ..
 ```
 
 ### 3. Start the signature server
 
 ```bash
-cd tiktok-signature
-npm start
+cd tiktok-signature-python
+python -m uvicorn main:app --port 8080
 ```
 
 The default server runs at:
@@ -150,15 +149,15 @@ The exported data includes fields such as:
 If the CLI reports that the signature server is not active, run:
 
 ```bash
-cd tiktok-signature
-npm start
+cd tiktok-signature-python
+python -m uvicorn main:app --port 8080
 ```
 
 ### Chromium is not installed
 
 ```bash
-cd tiktok-signature
-npx puppeteer browsers install chromium
+cd tiktok-signature-python
+python -m playwright install chromium
 ```
 
 ### Port `8080` is already in use
@@ -179,7 +178,7 @@ lsof -i :8080
 kill -9 <PID>
 ```
 
-### `tiktok-signature` directory is missing
+### `tiktok-signature-python` directory is missing
 
 Run the setup script first:
 
@@ -206,7 +205,7 @@ tiktok-scraper/
 |-- start.bat
 |-- start.sh
 |-- README.md
-`-- tiktok-signature/   # created during setup
+`-- tiktok-signature-python/   # created during setup
 ```
 
 ## Python Dependencies
@@ -220,7 +219,7 @@ Current contents of `requirements.txt`:
 
 This project depends on:
 
-- `carcabot/tiktok-signature`: https://github.com/carcabot/tiktok-signature
+- `afrzlfaiz/tiktok-signature-python`: https://github.com/afrzlfaiz/tiktok-signature-python
 
 ## Disclaimer
 

@@ -40,13 +40,13 @@ An asynchronous, API-based CLI tool to search TikTok videos by keyword using an 
 
 ```mermaid
 graph TD
-    User([User Terminal]) -->|Runs| CLI[tiktok_cli.py]
-    CLI -->|1. Health Check GET /health| SigServer[Signature Server - Port 8080]
-    CLI -->|2. Send Unsigned Params POST /fetch| SigServer
-    SigServer -->|3. Generate X-Bogus & Fetch| TikTokAPI[TikTok Search API]
-    TikTokAPI -->|4. Return JSON Video Stream| SigServer
-    SigServer -->|5. Return Scraped Data| CLI
-    CLI -->|6. Save to Disk| Files[JSON / CSV / XLSX Files]
+    User["User Terminal"] -->|"Runs"| CLI["tiktok_cli.py"]
+    CLI -->|"1. Health Check GET /health"| SigServer["Signature Server - Port 8080"]
+    CLI -->|"2. Send Unsigned Params POST /fetch"| SigServer
+    SigServer -->|"3. Generate X-Bogus & Fetch"| TikTokAPI["TikTok Search API"]
+    TikTokAPI -->|"4. Return JSON Video Stream"| SigServer
+    SigServer -->|"5. Return Scraped Data"| CLI
+    CLI -->|"6. Save to Disk"| Files["JSON / CSV / XLSX Files"]
 ```
 
 ---
